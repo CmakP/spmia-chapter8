@@ -10,11 +10,15 @@ import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import javax.servlet.Filter;
 
-
+/**
+ * The use of Source.class in the @EnableBinding annotation tells Spring Cloud Stream that this service will communicate
+ * with the message broker via a set of channels defined on the Source class.
+ * Remember, channels sit above a message queue.
+ */
 @SpringBootApplication
 @EnableEurekaClient
 @EnableCircuitBreaker
-@EnableBinding(Source.class)
+@EnableBinding(Source.class)  //Tell your application that it’s going to bind to a Spring Cloud Stream message broker
 public class Application {
     @Bean
     public Filter userContextFilter() {

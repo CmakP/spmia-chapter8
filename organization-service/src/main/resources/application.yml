@@ -1,3 +1,10 @@
+#stream.bindings is the start of the configuration needed for your service to publish to a Spring Cloud Stream message broke
+#output is the name of your channel and maps to the Source.output() channel
+#orgChangeTopic is the name of the message queue (or topic) you’re going to write messages to
+#The content-type gives a hint to
+#Spring Cloud Stream of what type of message is going to be sent and received
+#The stream.bindings.kafka property tells Spring you’re going to use Kafka as the message bus in the service (you could have used RabbitMQ as an alternative)
+#The zknodes and brokers property tells Spring Cloud Stream the network location of your Kafka and ZooKeeper
 spring:
   cloud:
     stream:

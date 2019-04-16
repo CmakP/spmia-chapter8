@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Every time the licensing service needs the organization data, it will check the Redis cache before calling out to
+ * the organization service.
+ */
 @Component
 public class OrganizationRestTemplateClient {
     @Autowired
@@ -26,7 +30,7 @@ public class OrganizationRestTemplateClient {
             return orgRedisRepo.findOrganization(organizationId);
         }
         catch (Exception ex){
-            logger.error("Error encountered while trying to retrieve organization {} check Redis Cache.  Exception {}", organizationId, ex);
+            logger.error("licenses.OrganizationRestTemplateClient.checkRedisCache() - Error encountered while trying to retrieve organization {} check Redis Cache.  Exception {}", organizationId, ex);
             return null;
         }
     }
@@ -34,22 +38,24 @@ public class OrganizationRestTemplateClient {
     private void cacheOrganizationObject(Organization org) {
         try {
             orgRedisRepo.saveOrganization(org);
+            logger.debug("licenses.OrganizationRestTemplateClient.cacheOrganizationObject() - cached Organization Object");
         }catch (Exception ex){
-            logger.error("Unable to cache organization {} in Redis. Exception {}", org.getId(), ex);
+            logger.error("licenses.OrganizationRestTemplateClient.cacheOrganizationObject() - Unable to cache organization {} in Redis. Exception {}", org.getId(), ex);
         }
     }
 
     public Organization getOrganization(String organizationId){
-        logger.debug("In Licensing Service.getOrganization: {}", UserContext.getCorrelationId());
+        logger.debug("In Licensing Service.getOrganization - CorrelationId : {}", UserContext.getCorrelationId());
 
         Organization org = checkRedisCache(organizationId);
 
         if (org!=null){
-            logger.debug("I have successfully retrieved an organization {} from the redis cache: {}", organizationId, org);
+            logger.debug("licenses.OrganizationRestTemplateClient.getOrganization() - I have successfully retrieved an organization {} from the redis cache: {}", organizationId, org);
+            logger.debug("");
             return org;
         }
 
-        logger.debug("Unable to locate organization from the redis cache: {}.", organizationId);
+        logger.debug("licenses.OrganizationRestTemplateClient.getOrganization() - Call out to organization - Unable to locate organization {} from the redis cache", organizationId);
 
         ResponseEntity<Organization> restExchange =
                 restTemplate.exchange(

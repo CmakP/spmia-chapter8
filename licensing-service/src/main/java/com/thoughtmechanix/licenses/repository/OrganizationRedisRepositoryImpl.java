@@ -8,11 +8,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 
+// The @Repository annotation tells Spring that this class is a Repository class used with Spring Data
 @Repository
 public class OrganizationRedisRepositoryImpl implements OrganizationRedisRepository {
+
+    //The name of the hash in your Redis server where organization data is stored
     private static final String HASH_NAME ="organization";
 
     private RedisTemplate<String, Organization> redisTemplate;
+    //The HashOperations class is a set of Spring helper methods for carrying out data operations on the Redis server
     private HashOperations hashOperations;
 
     public OrganizationRedisRepositoryImpl(){
@@ -29,6 +33,7 @@ public class OrganizationRedisRepositoryImpl implements OrganizationRedisReposit
         hashOperations = redisTemplate.opsForHash();
     }
 
+    //All interactions with Redis will be with a single Organization object stored by its key:
 
     @Override
     public void saveOrganization(Organization org) {

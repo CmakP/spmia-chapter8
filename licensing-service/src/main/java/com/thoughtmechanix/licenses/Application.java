@@ -30,10 +30,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The @EnableBinding annotation tells the service to the use the channels defined in the Sink interface to listen for incoming messages.
+ */
 @SpringBootApplication
 @EnableEurekaClient
 @EnableCircuitBreaker
-@EnableBinding(Sink.class)
+//@EnableBinding(Sink.class) //To be used with default input/output channels - See OrganizationChangeHandler.java for distributed caching example
 public class Application {
 
     @Autowired
@@ -56,6 +59,8 @@ public class Application {
         return template;
     }
 
+    // CONSTRUCTING THE DATABASE CONNECTION TO A REDIS SERVER:
+    //This method sets up the actual database connection to the Redis server
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConnFactory = new JedisConnectionFactory();
@@ -64,6 +69,11 @@ public class Application {
         return jedisConnFactory;
     }
 
+    /**
+     * Once you have a connection out to Redis, you’re going to use that connection to create a Spring RedisTemplate object.
+     * The RedisTemplate object will be used by the Spring Data repository classes to execute the queries and saves of
+     * organization service data to your Redis service.
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
@@ -71,6 +81,7 @@ public class Application {
         return template;
     }
 
+    // Spring Cloud Stream will execute this method every time a message is received off the input channel.
 //    @StreamListener(Sink.INPUT)
 //    public void loggerSink(OrganizationChangeModel orgChange) {
 //        logger.debug("Received an event for organization id {}", orgChange.getOrganizationId());

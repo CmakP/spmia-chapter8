@@ -10,7 +10,8 @@ spring:
         binder:
           zkNodes: localhost
           brokers: localhost
-
+#The spring.cloud.stream.bindings.input property maps the input channel to the orgChangeTopic queue
+#The group property is used to guarantee process-once semantics for a service
 #        input:
 #          destination: orgChangeTopic
 #          content-type: application/json
